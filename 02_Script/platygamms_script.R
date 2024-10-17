@@ -33,6 +33,8 @@ plot(0:10,prop1,ylim=c(0,1))
 # GAMM info
 # the k term cannot be more than 10 (10 years)
 
+# CANDIDATE SELECTION 5mMrf (5-month prior mean rainfall) vs 5mTrf (5-month prior total rainfall) vs year
+
 gamm.5mMrf <- gamm4(occurrence~t2(X5mMrf,k=10),random=~(1|siteID/catchment),data=platystatCatchment,family=binomial)
 summary(gamm.5mMrf$gam)
 
@@ -50,32 +52,21 @@ gamm.cand<-list(NDBI.5mMrf$mer,NDBI.5mTrf$mer,gamm.year$mer,gamm.NULL$mer)
 gamm.names<-c("5mMrf","5mTrf","year only","NULL")
 gamm.tab<-aictab(gamm.cand,modnames = gamm.names,second.ord = T,sort = T)
 gamm.tab
+# year determined to be have lowest AICc so will be using year as temporal variation 
 
-
+                 
 # NDBI CANDIDATE GAMM MODELS
 NDBI.int <- gamm4(occurrence ~ t2(year, k=10) + t2(ndbi, k=10, bs="fs") + t2(year, ndbi, k=10, bs=c("tp", "fs")), random = ~(1|siteID/catchment), data = platystatCatchment, family = binomial)
 summary(NDBI.int$gam)
 
-NDBI.intb <- gamm4(occurrence ~ t2(X5mTrf, k=10) + t2(ndbi, k=10, bs="fs") + t2(X5mTrf, ndbi, k=10, bs=c("tp", "fs")), random = ~(1|siteID/catchment), data = platystatCatchment, family = binomial)
-summary(NDBI.intb$gam)
-
-NDBI.intc <- gamm4(occurrence ~ t2(X5mMrf, k=10) + t2(ndbi, k=10, bs="fs") + t2(X5mMrf, ndbi, k=10, bs=c("tp", "fs")), random = ~(1|siteID/catchment), data = platystatCatchment, family = binomial)
-summary(NDBI.intc$gam)
-
 NDBI.add <- gamm4(occurrence ~ t2(year, k=10) + t2(ndbi, k=10, bs="fs"), random = ~(1|siteID/catchment), data = platystatCatchment, family = binomial)
 summary(NDBI.add$gam)
-
-NDBI.addb <- gamm4(occurrence ~ t2(X5mTrf, k=10) + t2(ndbi, k=10, bs="fs"), random = ~(1|siteID/catchment), data = platystatCatchment, family = binomial)
-summary(NDBI.addb$gam)
-
-NDBI.addc <- gamm4(occurrence ~ t2(X5mMrf, k=10) + t2(ndbi, k=10, bs="fs"), random = ~(1|siteID/catchment), data = platystatCatchment, family = binomial)
-summary(NDBI.addc$gam)
 
 NDBI.ndbi <- gamm4(occurrence ~ t2(ndbi, k=10, bs="fs"), random = ~(1|siteID/catchment), data = platystatCatchment, family = binomial)
 summary(NDBI.ndbi$gam)
 
-NDBI.cand<-list(NDBI.int$mer,NDBI.intb$mer,NDBI.intc$mer,NDBI.add$mer,NDBI.addb$mer,NDBI.addc$mer,gamm.year$mer,NDBI.ndbi$mer,gamm.5mTrf$mer,gamm.5mMrf$mer,gamm.NULL$mer)
-NDBI.names<-c("year interaction","5mTrf interaction","5mMrf interaction","year additive","5mTrf additive","5mMrf additive","year only","ndbi only","5mTrf only","5mMrf only","NULL")
+NDBI.cand<-list(NDBI.int$mer,NDBI.add$mer,gamm.year$mer,NDBI.ndbi$mer,gamm.NULL$mer)
+NDBI.names<-c("interaction","additive","year only","ndbi only","NULL")
 NDBI.tab<-aictab(NDBI.cand,modnames = NDBI.names,second.ord = T,sort = T)
 NDBI.tab
 
@@ -196,26 +187,14 @@ plot(ndbi.pr2$ndbi, ndbi.pr2$predicted_occurrence,
 NDVI.int <- gamm4(occurrence ~ t2(year, k=10) + t2(ndvi, k=10, bs="fs") + t2(year, ndvi, k=10, bs=c("tp", "fs")), random = ~(1|siteID/catchment), data = platystatCatchment, family = binomial)
 summary(NDVI.int$gam)
 
-NDVI.intb <- gamm4(occurrence ~ t2(X5mTrf, k=10) + t2(ndvi, k=10, bs="fs") + t2(X5mTrf, ndvi, k=10, bs=c("tp", "fs")), random = ~(1|siteID/catchment), data = platystatCatchment, family = binomial)
-summary(NDVI.intb$gam)
-
-NDVI.intc <- gamm4(occurrence ~ t2(X5mMrf, k=10) + t2(ndvi, k=10, bs="fs") + t2(X5mMrf, ndvi, k=10, bs=c("tp", "fs")), random = ~(1|siteID/catchment), data = platystatCatchment, family = binomial)
-summary(NDVI.intc$gam)
-
 NDVI.add <- gamm4(occurrence ~ t2(year, k=10) + t2(ndvi, k=10, bs="fs"), random = ~(1|siteID/catchment), data = platystatCatchment, family = binomial)
 summary(NDVI.add$gam)
-
-NDVI.addb <- gamm4(occurrence ~ t2(X5mTrf, k=10) + t2(ndvi, k=10, bs="fs"), random = ~(1|siteID/catchment), data = platystatCatchment, family = binomial)
-summary(NDVI.addb$gam)
-
-NDVI.addc <- gamm4(occurrence ~ t2(X5mMrf, k=10) + t2(ndvi, k=10, bs="fs"), random = ~(1|siteID/catchment), data = platystatCatchment, family = binomial)
-summary(NDVI.addc$gam)
 
 NDVI.ndvi <- gamm4(occurrence ~ t2(ndvi, k=10, bs="fs"), random = ~(1|siteID/catchment), data = platystatCatchment, family = binomial)
 summary(NDVI.ndvi$gam)
 
-NDVI.cand<-list(NDVI.int$mer,NDVI.intb$mer,NDVI.intc$mer,NDVI.add$mer,NDVI.addb$mer,NDVI.addc$mer,gamm.year$mer,NDVI.ndvi$mer,gamm.5mTrf$mer,gamm.5mMrf$mer,gamm.NULL$mer)
-NDVI.names<-c("year interaction","5mTrf interaction","5mMrf interaction","year additive","5mTrf additive","5mMrf additive","year only","ndvi only","5mTrf only","5mMrf only","NULL")
+NDVI.cand<-list(NDVI.int$mer,NDVI.add$mer,gamm.year$mer,NDVI.ndvi$mer,gamm.NULL$mer)
+NDVI.names<-c("interaction","additive","year only","ndvi only","NULL")
 NDVI.tab<-aictab(NDVI.cand,modnames = NDVI.names,second.ord = T,sort = T)
 NDVI.tab
 
@@ -309,7 +288,7 @@ par(xpd=F)
 
 
 
-#Urban Land Cover % (ULC)
+#Urban Land Cover (ULC)
 
 head(platystatCatchment);dim(platystatCatchment)
 LCdat<-platystatCatchment[-which(is.na(platystatCatchment$LC)),]
@@ -324,10 +303,7 @@ LCdat1$year<-LCdat1$year-min(LCdat1$year)
 head(LCdat1);dim(LCdat1)
 #All NAs have been omitted
 
-#ULC CANDIDATE MODELS
-ULC.NULL <- gamm4(occurrence ~ 1, random = ~(1|siteID/catchment), data = LCdat1, family = binomial)
-summary(ULC.NULL$gam)
-
+# CANDIDATE MODEL SELECTION AGAIN
 ULC.year <- gamm4(occurrence ~ year, random = ~(1|siteID/catchment), data = LCdat1, family = binomial)
 summary(ULC.year$gam)
 
@@ -337,30 +313,28 @@ summary(ULC.5mTrf$gam)
 ULC.5mMrf <- gamm4(occurrence ~ X5mMrf, random = ~(1|siteID/catchment), data = LCdat1, family = binomial)
 summary(ULC.5mMrf$gam)
 
+ULC.NULL <- gamm4(occurrence ~ 1, random = ~(1|siteID/catchment), data = LCdat1, family = binomial)
+summary(ULC.NULL$gam)
+
+ULCtemp.cand<-list(ULC.year$mer,ULC.5mTrf$mer,ULC.5mMrf$mer,ULC.NULL$mer)
+ULCtemp.names<-c("year interaction","5mTrf interaction","5mMrf interaction","year additive","5mTrf additive","5mMrf additive","year only","ULC only","ULC 5mTrf only","ULC 5mMrf only","NULL")
+ULCtemp.tab<-aictab(ULC.cand,modnames = ULC.names,second.ord = T,sort = T)
+ULCtemp.tab
+# year still the best for the ULC model
+
+#ULC CANDIDATE MODELS
+
 ULC.LC <- gamm4(occurrence ~ LC, random = ~(1|siteID/catchment), data = LCdat1, family = binomial)
 summary(ULC.LC$gam)
 
 ULC.int <- gamm4(occurrence ~ year*LC, random = ~(1|siteID/catchment), data = LCdat1, family = binomial)
 summary(ULC.int$gam)
 
-ULC.intb <- gamm4(occurrence~X5mTrf*LC,random=~(1|siteID/catchment), data = LCdat1, family = binomial)
-summary(ULC.intb$gam)
-
-ULC.intc <- gamm4(occurrence~X5mMrf*LC,random=~(1|siteID/catchment), data = LCdat1, family = binomial)
-summary(ULC.intc$gam)
-
 ULC.add <- gamm4(occurrence ~ year+LC, random = ~(1|siteID/catchment), data = LCdat1, family = binomial)
 summary(ULC.add$gam)
 
-ULC.addb <- gamm4(occurrence ~ X5mTrf+LC, random = ~(1|siteID/catchment), data = LCdat1, family = binomial)
-summary(ULC.addb$gam)
-
-ULC.addc <- gamm4(occurrence~X5mMrf+LC,random=~(1|siteID/catchment), data = LCdat1, family = binomial)
-summary(ULC.addc$gam)
-
-
-ULC.cand<-list(ULC.int$mer,ULC.intb$mer,ULC.intc$mer,ULC.add$mer,ULC.addb$mer,ULC.addc$mer,ULC.year$mer,ULC.LC$mer,ULC.5mTrf$mer,ULC.5mMrf$mer,ULC.NULL$mer)
-ULC.names<-c("year interaction","5mTrf interaction","5mMrf interaction","year additive","5mTrf additive","5mMrf additive","year only","ULC only","ULC 5mTrf only","ULC 5mMrf only","NULL")
+ULC.cand<-list(ULC.int$mer,ULC.add$mer,ULC.year$mer,ULC.LC$mer,ULC.NULL$mer)
+ULC.names<-c("interaction","additive","year only","ULC-only","NULL")
 ULC.tab<-aictab(ULC.cand,modnames = ULC.names,second.ord = T,sort = T)
 ULC.tab
 
